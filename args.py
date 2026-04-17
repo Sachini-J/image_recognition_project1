@@ -3,7 +3,6 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description="Model training options")
 
-#    parser.add_argument('--backbone', type=str, default='fasterrcnn_resnet50_fpn', choices=['fasterrcnn_resnet50_fpn', 'fasterrcnn_mobilenet_v3'])
     parser.add_argument('--backbone', type=str, default= 'fasterrcnn_mobilenet_v3')
 
     parser.add_argument('--csv_dir', type=str, default='./data/CSVs')
@@ -21,6 +20,6 @@ def get_args():
 
     parser.add_argument('--lr', type=float, default=1e-5)
 
-    parser.add_argument('--wd', type=float, default=1e-3)
+    parser.add_argument('--wd', type=float, default=1e-4)
 
     return parser.parse_args()
