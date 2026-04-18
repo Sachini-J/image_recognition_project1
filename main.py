@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import DataLoader
 from model import build_model
 from trainer import train_model
+from augmentations import build_train_transforms, build_val_transforms
 
 def collate(batch):
     images, targets = zip(*batch)
@@ -20,8 +21,8 @@ def main():
     val_df = pd.read_csv("CSVs/val_df.csv")
 
     # 2. Prepare dataset
-    train_dataset = ObjDetectionDataset(train_df, args)
-    val_dataset = ObjDetectionDataset(val_df, args)
+    train_dataset = ObjDetectionDataset(train_df, args, transforms=build_train_transforms(args.image_size))
+    val_dataset = ObjDetectionDataset(val_df, args, transforms=build_val_transforms(args.image_size))
 
     #print(train_df.columns)
 
