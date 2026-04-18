@@ -1,22 +1,3 @@
-'''import pandas as pd
-#from pathlib import Path
-from sklearn.model_selection import train_test_split
-
-#df = pd.read_csv(r'e:\Edu\SAMK\2\AI Project 1\Final Project\Group_6\Data\CSVs\dataset.csv')
-df = pd.read_csv('/mnt/e/Edu/SAMK/2/AI Project 1/Final Project/Group_6/Data/CSVs/dataset.csv')
-
-train_data, val_data = train_test_split(
-    df,
-    test_size=0.3,
-)
-#train_data.to_csv(r'e:\Edu\SAMK\2\AI Project 1\Final Project\Group_6\Data\CSVs\train_df.csv', index=False)
-#val_data.to_csv(r'e:\Edu\SAMK\2\AI Project 1\Final Project\Group_6\Data\CSVs\val_df.csv', index=False)
-
-train_data.to_csv('/mnt/e/Edu/SAMK/2/AI Project 1/Final Project/Group_6/Data/CSVs/train_df.csv', index=False)
-val_data.to_csv('/mnt/e/Edu/SAMK/2/AI Project 1/Final Project/Group_6/Data/CSVs/val_df.csv', index=False)
-
-print("Done")'''
-
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
