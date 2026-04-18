@@ -5,11 +5,17 @@ from args import get_args
 from utils import resize_box_xyxy
 import random
 from torchvision.transforms.functional import hflip
+import aumentation as aug
 
 class ObjDetectionDataset(torch.utils.data.Dataset):
-    def __init__(self, df, args):
+    def __init__(self, df, args, transform=None):
         self.df = df.reset_index(drop=True)
         self.args = args
+
+        if transform is None:
+            self.transform = aug.NoTransform()
+        else:
+            self.transform = transform
 
     def __len__(self):
         return len(self.df)
@@ -20,6 +26,7 @@ class ObjDetectionDataset(torch.utils.data.Dataset):
         row = self.df.iloc[idx]
 
         img = Image.open(row["Images"]).convert("RGB")
+        img = Ima
         w, h = img.size
         
         # Data Aumentation
@@ -51,4 +58,6 @@ class ObjDetectionDataset(torch.utils.data.Dataset):
         }
         # TODO 2: Return what you need from this class
         # your code here
+        image, target = self.transform(image, target)
+        
         return image, target
