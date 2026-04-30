@@ -3,6 +3,7 @@ import os
 import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
+import numpy as np
 
 def train_model(model, train_loader, val_loader, device):
     args = get_args()
@@ -11,16 +12,11 @@ def train_model(model, train_loader, val_loader, device):
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
     best_val_loss = float('inf')
 
-    best_val_loss = float('inf')
-    patience = 5
-    counter = 0
-
     # Lists to record losses for plotting
     train_losses = []
     val_losses = []
 
     for epoch in range(args.epochs):
-        
         model.train()
         running_loss = 0.0
 
@@ -46,49 +42,28 @@ def train_model(model, train_loader, val_loader, device):
         
         # Compute average training loss for this epoch
         train_epoch_loss = running_loss / len(train_loader.dataset)
-
         # Validation phase
-        val_loss = validate_model(model, val_loader, device)
-
-        print(f"Epoch {epoch+1}/{args.epochs} | Train Loss: {train_epoch_loss:.4f} | Val Loss: {val_loss:.4f}")
+        val_loss = validate_model(model,val_loader,device)
 
         train_losses.append(train_epoch_loss)
         val_losses.append(val_loss)
 
-        # Save best model
+        print(f"Epoch {epoch + 1}/{args.epochs} | "
+              f"Train Losses: {train_epoch_loss:.4f} | "
+              # new f"Val Losses: {val_epoch_loss:.4f}")
+              f"Val Loss: {val_loss:.4f}")
+
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            counter = 0
 
             os.makedirs(args.out_dir, exist_ok=True)
-            torch.save(model.state_dict(), os.path.join(args.out_dir, 'best_model.pth'))
-        
-    
-    # Plot learning curve after training
-    print("Train losses:", train_losses)
-    print("Val losses:", val_losses)
+            torch.save(model.state_dict(), os.path.join(args.out_dir, "best_model.pth"))
 
-    epochs_range = range(1, len(train_losses) + 1)
-
-    plt.figure(figsize=(8,6))
-    plt.plot(epochs_range, train_losses, label='Training Loss', marker='o')
-    plt.plot(epochs_range, val_losses, label='Validation Loss', marker='o')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Learning Curve')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
- 
-    # Save the plot to the output directory
-    plt.savefig("learning_curve.png")
-
+    plot_learning_curve(train_losses, val_losses, args.out_dir)
 
 def validate_model(model, val_loader, device):
-
     model.train()
-    
+
     val_loss_sum = 0.0
     val_count = 0
 
@@ -106,10 +81,46 @@ def validate_model(model, val_loader, device):
 
             loss_dict = model(images, targets)
             loss = sum(loss_value for loss_value in loss_dict.values())
-
+            
             val_loss_sum += loss.item() * len(images)
             val_count += len(images)
 
     val_epoch_loss = val_loss_sum / val_count
-    
     return val_epoch_loss
+
+def plot_learning_curve(train_losses, val_losses, out_dir):
+    os.makedirs(out_dir, exist_ok=True)
+
+    epochs = range(1, len(train_losses) + 1)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(epochs, train_losses, marker='o', label='Training Loss')
+    plt.plot(epochs, val_losses, marker='o', label='Validation Loss')
+    
+    # Find best validation loss
+    best_val_loss = min(val_losses)
+    best_epoch = val_losses.index(best_val_loss) + 1  # +1 because epochs start at 1
+
+    # Mark it on graph
+    plt.scatter(best_epoch, best_val_loss, label='Best Val Loss')
+
+    # Annotate it
+    plt.annotate(
+        f"Best Fitting Point: {best_val_loss:.4f}", 
+        (best_epoch, best_val_loss),
+        textcoords="offset points",
+        xytext=(0, 10),
+        ha='center'
+    )
+
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Learning Curve')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+
+    save_path = os.path.join(out_dir, "learning_curve.png")
+    plt.savefig(save_path)
+    plt.show()
+    plt.close() 
