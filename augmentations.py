@@ -672,7 +672,7 @@ def build_train_transforms(image_size):
             [
                 NoTransform(),
                 Scale(ratio_range=(0.85, 1.15), prob=1.0),
-                Translate(x_frac=(-0.08, 0.08), y_frac=(-0.08, 0.08), prob=1.0),
+                Translate(x_frac=(-0.08, 0.08), y_frac=(-0.08, 0.08), prob=0.5),
                 Rotate(degree_range=(-10, 10), prob=1.0),
                 Shear(x_degree_range=(-8, 8), y_degree_range=(-4, 4), prob=1.0),
                 RandomResizedCrop(
@@ -682,7 +682,7 @@ def build_train_transforms(image_size):
                     prob=1.0,
                     min_visibility=0.30,
                 ),
-                RandomZoomOut(side_range=(1.0, 1.3), prob=1.0),
+                RandomZoomOut(side_range=(1.0, 1.3), prob=0.5),
             ],
             prob=0.80,
         ),
